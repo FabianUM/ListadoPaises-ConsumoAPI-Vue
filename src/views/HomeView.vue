@@ -11,11 +11,17 @@
     <div v-show="showContinentFilters" class="continent-filters">
       <div class="filtro">
         <p>Filtrar por continentes</p>
+        <div class="boton">
+          <button @click="clearContinentSelections" class="limpiar-btn">Limpiar</button>
+        </div>
       </div>
-      <div v-for="continent in continents" :key="continent.name" class="continent-filter">
-        <img :src="getContinentImage(continent.name)" :alt="continent.name" class="continent-image" :class="{ selected: continent.selected }" @click="toggleContinentSelection(continent)" />
-        <label>{{ continent.name }}</label>
+      <div class="filtro2">
+        <div v-for="continent in continents" :key="continent.name" class="continent-filter">
+          <img :src="getContinentImage(continent.name)" :alt="continent.name" class="continent-image" :class="{ selected: continent.selected }" @click="toggleContinentSelection(continent)" />
+          <label>{{ continent.name }}</label>
+        </div>
       </div>
+      
     </div>
 
     <div class="card-deck" :class="{ 'two-columns': selectedCountry }">
@@ -162,6 +168,11 @@ export default {
         console.error('Error fetching countries or images:', error);
       }
     },
+    clearContinentSelections() {
+      this.continents.forEach(continent => {
+        continent.selected = false;
+      });
+    },
     selectCountry(country) {
       this.selectedCountry = country;
     },
@@ -225,22 +236,48 @@ export default {
   padding: 20px;
   border-radius: 1rem;
 }
+.filtro{
+  display: flex;
+}
+.filtro2{
+  display: grid ;
+  grid-template-columns: repeat(3, 1fr) ;
+}
 .continent-filter {
   display: inline-block;
-  align-items: center;
+  text-align: center;
   margin-right: 10px;
 }
 .continent-image {
-  width: 50px;
-  height: 50px;
+  display: block;
+  width: 150px;
+  height: 120px;
   margin-right: 5px;
 }
 .continent-image.selected {
-  border: 2px solid blue;
+  border: 2px solid rgb(45, 202, 230);
   border-radius: 5px;
 }
 .continent-filter input {
   margin-right: 5px;
+}
+.boton{
+  margin-left: 50%;
+
+}
+.limpiar-btn {
+  background-color: transparent;
+  border: none;
+  color: rgb(32, 184, 214);
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  font-size: inherit;
+  font-weight: bold;
+}
+
+.limpiar-btn:hover {
+  text-decoration: underline;
 }
 .card-deck {
   display: grid !important;
