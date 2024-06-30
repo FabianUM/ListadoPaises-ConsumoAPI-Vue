@@ -1,12 +1,23 @@
 <template>
   <div>
     <div class="search-bar">
-      <input type="text" v-model="searchQuery" placeholder="Escribe el país que deseas ver.." class="search-bar" />
+      <input type="text" v-model="searchQuery" placeholder="Escribe el país que deseas ver.." class="search-bar" @focus="toggleContinentFilters(true)" @blur="hideContinentFilters" />
       <button @click="searchQuery">
         <i class="fa fa-search"></i> Buscar
       </button>
     </div>
-    
+
+    <!-- Nueva sección de filtro de continentes -->
+    <div v-show="showContinentFilters" class="continent-filters">
+      <div class="filtro">
+        <p>Filtrar por continentes</p>
+      </div>
+      <div v-for="continent in continents" :key="continent.name" class="continent-filter">
+        <img :src="getContinentImage(continent.name)" :alt="continent.name" class="continent-image" :class="{ selected: continent.selected }" @click="toggleContinentSelection(continent)" />
+        <label>{{ continent.name }}</label>
+      </div>
+    </div>
+
     <div class="card-deck" :class="{ 'two-columns': selectedCountry }">
       <div class="card" v-for="country in filteredCountries" :key="country.code" @click="selectCountry(country)">
         <img class="card-img-top" :src="country.image" alt="Country image">
@@ -69,14 +80,27 @@ export default {
       countries: [],
       selectedCountry: null,
       searchQuery: '',
-      regions: ['Santa Cruz', 'Cordoba', 'Jujuy', 'Tucuman'] // Example regions
+      regions: ['Santa Cruz', 'Cordoba', 'Jujuy', 'Tucuman'], // Example regions
+      continents: [
+        { name: 'Europe', selected: false },
+        { name: 'America', selected: false },
+        { name: 'Asia', selected: false },
+        { name: 'Oceania', selected: false },
+        { name: 'Africa', selected: false }
+      ],
+      showContinentFilters: false
     };
   },
   computed: {
     filteredCountries() {
-      return this.countries.filter(country => 
-        country.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      const searchQueryLower = this.searchQuery.toLowerCase();
+      const selectedContinents = this.continents.filter(continent => continent.selected).map(continent => continent.name);
+
+      return this.countries.filter(country => {
+        const matchesSearchQuery = country.name.toLowerCase().includes(searchQueryLower);
+        const matchesContinent = selectedContinents.length === 0 || selectedContinents.includes(country.continent.name);
+        return matchesSearchQuery && matchesContinent;
+      });
     }
   },
   methods: {
@@ -143,6 +167,22 @@ export default {
     },
     closeDetails() {
       this.selectedCountry = null;
+    },
+    toggleContinentSelection(continent) {
+      continent.selected = !continent.selected;
+    },
+    toggleContinentFilters(show) {
+      this.showContinentFilters = show;
+    },
+    hideContinentFilters() {
+      // Usar un setTimeout para retrasar el ocultamiento del filtro para permitir la selección de checkboxes
+      setTimeout(() => {
+        this.showContinentFilters = false;
+      }, 200);
+    },
+    getContinentImage(continentName) {
+      // Devuelve la ruta de la imagen correspondiente a cada continente
+      return require(`@/assets/${continentName.toLowerCase()}.png`);
     }
   },
   mounted() {
@@ -157,7 +197,6 @@ export default {
   align-items: center;
   margin-bottom: 10px;
 }
-  
 .search-bar input {
   flex: 1;
   padding: 10px;
@@ -165,7 +204,6 @@ export default {
   border-radius: 20px;
   margin-right: 10px;
 }
-  
 .search-bar button {
   background-color: #007bff;
   color: #fff;
@@ -175,6 +213,33 @@ export default {
   cursor: pointer;
 }
 .search-bar button i {
+  margin-right: 5px;
+}
+.continent-filters {
+  display: block;
+  /*flex-wrap: wrap;*/
+  width: 60%;
+  margin-bottom: 10px;
+  background: white;
+  box-shadow: 4px 4px 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 1rem;
+}
+.continent-filter {
+  display: inline-block;
+  align-items: center;
+  margin-right: 10px;
+}
+.continent-image {
+  width: 50px;
+  height: 50px;
+  margin-right: 5px;
+}
+.continent-image.selected {
+  border: 2px solid blue;
+  border-radius: 5px;
+}
+.continent-filter input {
   margin-right: 5px;
 }
 .card-deck {
@@ -280,11 +345,9 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
   transition: background-color 0.3s, box-shadow 0.3s; 
 }
-
 .close:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
-
 .close:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
