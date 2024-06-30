@@ -47,7 +47,8 @@ export default {
       let countries = response.data.countries;
 
       // Limitar a las primeras 12 países
-      countries = countries.slice(0, 12);
+      //countries = countries.slice(0, 12);
+      countries = countries.slice(30, 44);
 
       // Fetch images from Pixabay for each country flag
       for (let country of countries) {
