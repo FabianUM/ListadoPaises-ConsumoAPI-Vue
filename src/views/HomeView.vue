@@ -137,7 +137,7 @@ export default {
         //countries = countries.slice(0, 12);
         countries = countries.slice(30, 44);
 
-        // Fetch images from Pixabay for each country flag
+        // Generar las imagenes para bandera
         for (let country of countries) {
           const flagResponse = await pixabayClient.get('', {
             params: {
@@ -150,7 +150,7 @@ export default {
           country.flag = flag;
         }
 
-        // Fetch images from Pixabay for each country capital
+        // Obtener imagenes para la capital
         for (let country of countries) {
           const imageResponse = await pixabayClient.get('', {
             params: {
