@@ -8,7 +8,7 @@
     </div>
 
     <!-- Nueva sección de filtro de continentes -->
-    <div v-show="showContinentFilters" class="continent-filters">
+    <div v-show="showContinentFilters" class="continent-filters" >
       <div class="filtro">
         <p>Filtrar por continentes</p>
         <div class="boton">
@@ -86,7 +86,7 @@ export default {
       countries: [],
       selectedCountry: null,
       searchQuery: '',
-      regions: ['Santa Cruz', 'Cordoba', 'Jujuy', 'Tucuman'], // Example regions
+      regions: ['Santa Cruz', 'Cordoba', 'Jujuy', 'Tucuman'],
       continents: [
         { name: 'Europe', selected: false },
         { name: 'America', selected: false },
@@ -104,7 +104,7 @@ export default {
 
       return this.countries.filter(country => {
         const matchesSearchQuery = country.name.toLowerCase().includes(searchQueryLower);
-        const matchesContinent = selectedContinents.length === 0 || selectedContinents.includes(country.continent.name);
+        const matchesContinent = selectedContinents.length === 0 || selectedContinents.some(selected => country.continent.name.includes(selected));
         return matchesSearchQuery && matchesContinent;
       });
     }
@@ -189,7 +189,7 @@ export default {
       // Usar un setTimeout para retrasar el ocultamiento del filtro para permitir la selección de checkboxes
       setTimeout(() => {
         this.showContinentFilters = false;
-      }, 200);
+      }, 2000);
     },
     getContinentImage(continentName) {
       // Devuelve la ruta de la imagen correspondiente a cada continente
@@ -228,7 +228,6 @@ export default {
 }
 .continent-filters {
   display: block;
-  /*flex-wrap: wrap;*/
   width: 60%;
   margin-bottom: 10px;
   background: white;
